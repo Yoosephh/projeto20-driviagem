@@ -1,9 +1,11 @@
-import dayjs from "dayjs";
 import { flightRepositories } from "../repositories/flight.repositositories.js";
 import { userErrors } from "../error/user.errors.js";
 
 export async function flightRegistration(origin, destination, date) {
   if(typeof date === "number") throw userErrors.dateFormat()
+
+  if(origin === destination) throw userErrors.originDestination()
+
   const splitDate = date.split("-");
   const day = parseInt(splitDate[0], 10);
   const month = parseInt(splitDate[1] - 1, 10);
@@ -14,8 +16,39 @@ export async function flightRegistration(origin, destination, date) {
   const timeDifference = dateTimestamp - nowTimetamp
   if(timeDifference <= 0) throw userErrors.dateError()
 
-  console.log(newDate)
-
   await flightRepositories.registerFlight(origin, destination, date)
+}
 
+export async function travelRegistration(passengerId, flightId) {
+  await flightRepositories.registerTravel(passengerId, flightId)
+}
+
+export async function sendFlights(origin, destination, biggerDate, smallerDate){
+    if(origin){
+      if(typeof origin !== "number" || !Number.isInteger(origin) || origin < 1) throw userErrors.queryNumberType("origin")
+    }
+    if(destination){
+      if(typeof destination !== "number" || !Number.isInteger(destination)|| destination < 1) throw userErrors.queryNumberType("destination")
+    }
+    if(smallerDate && !biggerDate) throw userErrors.querySingleDate("smaller-date", "bigger-date")
+    
+    if(!smallerDate && biggerDate) throw userErrors.querySingleDate("bigger-date", "smaller-date")
+
+    if(smallerDate && biggerDate){
+      const splitBiggerDate = biggerDate.split("-")
+      const splitSmallerDate = smallerDate.split("-")
+
+      if(Number(splitSmallerDate[0]) > Number(splitBiggerDate[0]) && Number(splitSmallerDate[1])>=Number(splitBiggerDate[1]) && Number(splitSmallerDate[2])>=Number(splitBiggerDate[2]) )throw userErrors.queryDateValues()
+
+      if(Number(splitSmallerDate[1]) > Number(splitBiggerDate[1]) && Number(splitSmallerDate[2])>=Number(splitBiggerDate[2])) throw userErrors.queryDateValues()
+
+      if(Number(splitSmallerDate[2]) > Number(splitBiggerDate[2])) throw userErrors.queryDateValues()
+    }
+
+    const flights = await flightRepositories.getFlights(origin, destination, biggerDate, smallerDate)
+    flights.rows.forEach(item => {
+      item.date = item.date.toISOString().slice(0, 10).split("-").reverse().join("-")
+    })
+
+    return flights.rows
 }

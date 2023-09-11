@@ -10,13 +10,15 @@ export async function flightRegistration(origin, destination, date) {
   const day = parseInt(splitDate[0], 10);
   const month = parseInt(splitDate[1] - 1, 10);
   const year = parseInt(splitDate[2], 10);
+  const deployDate = [splitDate[1], splitDate[0], splitDate[2]]
+  deployDate.join("")
   const dateAdjusted = new Date(year, month, day);
   const dateTimestamp = dateAdjusted.getTime();
   const nowTimetamp = Date.now();
   const timeDifference = dateTimestamp - nowTimetamp
   if(timeDifference <= 0) throw userErrors.dateError()
 
-  await flightRepositories.registerFlight(origin, destination, date)
+  await flightRepositories.registerFlight(origin, destination, deployDate)
 }
 
 export async function travelRegistration(passengerId, flightId) {

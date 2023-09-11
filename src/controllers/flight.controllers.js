@@ -23,6 +23,5 @@ export async function getFlights(req, res){
   const smallerDate = req.query['smaller-date'] 
 
   const flights = await sendFlights(origin, destination, biggerDate, smallerDate)
-  console.log(flights)
   return res.status(httpStatus.OK).send(flights)
 }

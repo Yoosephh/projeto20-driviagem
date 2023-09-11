@@ -50,7 +50,7 @@ export async function sendFlights(origin, destination, biggerDate, smallerDate){
     const splitSmaller = smallerDate.split("-")
     const deployBigger = [splitBigger[1], splitBigger[0], splitBigger[2]].join("")
     const deploySmaller = [splitSmaller[1], splitSmaller[0], splitSmaller[2]].join("")
-    
+    console.log(deployBigger, deploySmaller)
     const flights = await flightRepositories.getFlights(origin, destination, deployBigger, deploySmaller)
 
     flights.rows.forEach(item => {

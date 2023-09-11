@@ -36,7 +36,6 @@ export async function sendFlights(origin, destination, biggerDate, smallerDate){
     if(smallerDate && !biggerDate) throw userErrors.querySingleDate("smaller-date", "bigger-date")
     
     if(!smallerDate && biggerDate) throw userErrors.querySingleDate("bigger-date", "smaller-date")
-    let flights = []
     if(smallerDate && biggerDate){
       const splitBiggerDate = biggerDate.split("-")
       const splitSmallerDate = smallerDate.split("-")
@@ -51,12 +50,12 @@ export async function sendFlights(origin, destination, biggerDate, smallerDate){
       const splitSmaller = smallerDate.split("-")
       const deployBigger = [splitBigger[1], splitBigger[0], splitBigger[2]].join("-")
       const deploySmaller = [splitSmaller[1], splitSmaller[0], splitSmaller[2]].join("-")
-      flights = await flightRepositories.getFlights(origin, destination, deployBigger, deploySmaller)
-      if(flights.rowCount === 0 ) return []
+      const flights = await flightRepositories.getFlights(origin, destination, deployBigger, deploySmaller)
+      // if(flights.rowCount === 0 ) return []
       if(flights.rowCount > 10) return res.status(httpStatus.INTERNAL_SERVER_ERROR).send({message: "Too many results"})
       flights.rows.forEach(item => {
         item.date = item.date.toISOString().slice(0, 10).split("-").reverse().join("-")
       })
+      return flights.rows
     }
-    return flights.rows
 }

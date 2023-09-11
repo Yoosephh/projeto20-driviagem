@@ -11,7 +11,7 @@ export async function flightRegistration(origin, destination, date) {
   const month = parseInt(splitDate[1] - 1, 10);
   const year = parseInt(splitDate[2], 10);
   const deployDate = [splitDate[1], splitDate[0], splitDate[2]]
-  deployDate.join("")
+  deployDate.join("-")
   const dateAdjusted = new Date(year, month, day);
   const dateTimestamp = dateAdjusted.getTime();
   const nowTimetamp = Date.now();
@@ -48,8 +48,8 @@ export async function sendFlights(origin, destination, biggerDate, smallerDate){
     }
     const splitBigger = biggerDate.split("-")
     const splitSmaller = smallerDate.split("-")
-    const deployBigger = [splitBigger[1], splitBigger[0], splitBigger[2]].join("")
-    const deploySmaller = [splitSmaller[1], splitSmaller[0], splitSmaller[2]].join("")
+    const deployBigger = [splitBigger[1], splitBigger[0], splitBigger[2]].join("-")
+    const deploySmaller = [splitSmaller[1], splitSmaller[0], splitSmaller[2]].join("-")
     console.log(deployBigger, deploySmaller)
     const flights = await flightRepositories.getFlights(origin, destination, deployBigger, deploySmaller)
 

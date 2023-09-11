@@ -7,6 +7,9 @@ export async function cityRegistration(name) {
   await userRepositories.joinCity(name)
 }
 export async function sendUserFlights(name){
-  return await userRepositories.getUsersFlights(name)
+  const flights = await userRepositories.getUsersFlights(name)
+  if(flights.rowCount > 10) return res.status(httpStatus.INTERNAL_SERVER_ERROR).send({message: "Too many results"})
+  return flights
+  
 }
 

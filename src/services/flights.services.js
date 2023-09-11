@@ -59,7 +59,7 @@ export async function sendFlights(origin, destination, biggerDate, smallerDate){
       return flights.rows
     }
     const flights = await flightRepositories.getFlights(origin, destination, biggerDate, smallerDate)
-    if(flights.rowCount > 10) return res.status(httpStatus.INTERNAL_SERVER_ERROR).send({message: "Too many results"})
+    
       flights.rows.forEach(item => {
         item.date = item.date.toISOString().slice(0, 10).split("-").reverse().join("-")
       })

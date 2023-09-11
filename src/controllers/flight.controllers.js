@@ -4,7 +4,7 @@ import { flightRegistration, sendFlights, travelRegistration } from "../services
 
 export async function newFlight(req,res) {
   const {origin, destination, date} = req.body;
-
+  console.log(date)
   await flightRegistration(origin, destination, date)
   return res.sendStatus(httpStatus.CREATED)
 }

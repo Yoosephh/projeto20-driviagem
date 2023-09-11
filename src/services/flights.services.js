@@ -1,5 +1,6 @@
 import { flightRepositories } from "../repositories/flight.repositositories.js";
 import { userErrors } from "../error/user.errors.js";
+import httpStatus from "http-status";
 
 export async function flightRegistration(origin, destination, date) {
   if(typeof date === "number") throw userErrors.dateFormat()
@@ -52,6 +53,7 @@ export async function sendFlights(origin, destination, biggerDate, smallerDate){
       const deploySmaller = [splitSmaller[1], splitSmaller[0], splitSmaller[2]].join("-")
       flights = await flightRepositories.getFlights(origin, destination, deployBigger, deploySmaller)
       if(flights.rowCount === 0 ) return []
+      if(flights.rowCount > 10) return res.status(httpStatus.INTERNAL_SERVER_ERROR).send({message: "Too many results"})
       flights.rows.forEach(item => {
         item.date = item.date.toISOString().slice(0, 10).split("-").reverse().join("-")
       })

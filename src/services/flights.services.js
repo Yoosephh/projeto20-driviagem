@@ -35,7 +35,7 @@ export async function sendFlights(origin, destination, biggerDate, smallerDate){
     if(smallerDate && !biggerDate) throw userErrors.querySingleDate("smaller-date", "bigger-date")
     
     if(!smallerDate && biggerDate) throw userErrors.querySingleDate("bigger-date", "smaller-date")
-
+    let flights;
     if(smallerDate && biggerDate){
       const splitBiggerDate = biggerDate.split("-")
       const splitSmallerDate = smallerDate.split("-")
@@ -45,17 +45,16 @@ export async function sendFlights(origin, destination, biggerDate, smallerDate){
       if(Number(splitSmallerDate[1]) > Number(splitBiggerDate[1]) && Number(splitSmallerDate[2])>=Number(splitBiggerDate[2])) throw userErrors.queryDateValues()
 
       if(Number(splitSmallerDate[2]) > Number(splitBiggerDate[2])) throw userErrors.queryDateValues()
+
+      const splitBigger = biggerDate.split("-")
+      const splitSmaller = smallerDate.split("-")
+      const deployBigger = [splitBigger[1], splitBigger[0], splitBigger[2]].join("-")
+      const deploySmaller = [splitSmaller[1], splitSmaller[0], splitSmaller[2]].join("-")
+      flights = await flightRepositories.getFlights(origin, destination, deployBigger, deploySmaller)
+
+      flights.rows.forEach(item => {
+        item.date = item.date.toISOString().slice(0, 10).split("-").reverse().join("-")
+      })
     }
-    const splitBigger = biggerDate.split("-")
-    const splitSmaller = smallerDate.split("-")
-    const deployBigger = [splitBigger[1], splitBigger[0], splitBigger[2]].join("-")
-    const deploySmaller = [splitSmaller[1], splitSmaller[0], splitSmaller[2]].join("-")
-    console.log(deployBigger, deploySmaller)
-    const flights = await flightRepositories.getFlights(origin, destination, deployBigger, deploySmaller)
-
-    flights.rows.forEach(item => {
-      item.date = item.date.toISOString().slice(0, 10).split("-").reverse().join("-")
-    })
-
     return flights.rows
 }

@@ -51,7 +51,7 @@ export async function sendFlights(origin, destination, biggerDate, smallerDate){
       const deployBigger = [splitBigger[1], splitBigger[0], splitBigger[2]].join("-")
       const deploySmaller = [splitSmaller[1], splitSmaller[0], splitSmaller[2]].join("-")
       const flights = await flightRepositories.getFlights(origin, destination, deployBigger, deploySmaller)
-      // if(flights.rowCount === 0 ) return []
+      if(flights.rowCount === 0 ) return []
       if(flights.rowCount > 10) return res.status(httpStatus.INTERNAL_SERVER_ERROR).send({message: "Too many results"})
       flights.rows.forEach(item => {
         item.date = item.date.toISOString().slice(0, 10).split("-").reverse().join("-")
